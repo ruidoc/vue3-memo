@@ -7,9 +7,14 @@
       <menos></menos>
     </div>
     <div class="detail">
-      <template v-if="store.active_memoid">
-        <cus-editor v-model="content">
-          <input placeholder="输入标题" class="title" v-model="title" />
+      <template v-if="cur_memo">
+        <cus-editor v-model="content" @update:modelValue="contentChange">
+          <input
+            placeholder="输入标题"
+            class="memo-title"
+            v-model="title"
+            @input="titleChange"
+          />
         </cus-editor>
       </template>
     </div>
@@ -17,11 +22,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { indexStore } from "@/stores";
 import CusEditor from "@/components/CusEditor.vue";
 import Cataloge from "./catalogs.vue";
 import Menos from "./menos.vue";
+import { debounce } from "@/utils";
 const store = indexStore();
 const title = ref("");
 const content = ref("");
@@ -31,10 +37,26 @@ const cur_memo = computed(() => {
   );
   return memo || null;
 });
+
+const titleChange = debounce(() => {
+  store.updateMemo({
+    title: title.value,
+  });
+});
+
+const contentChange = debounce((strs: string[]) => {
+  // console.log("触发修改事件：", content.value, strs);
+  store.updateMemo({
+    content: strs[0],
+  });
+});
+
 watch(cur_memo, (val) => {
   if (val) {
-    title.value = val.title;
-    content.value = val.content;
+    nextTick(() => {
+      title.value = val.title;
+      content.value = val.content;
+    });
   } else {
     title.value = content.value = "";
   }
@@ -57,7 +79,7 @@ watch(cur_memo, (val) => {
   .detail {
     flex: 1;
     min-width: 300px;
-    .title {
+    .memo-title {
       border: none;
       outline: none;
       font-size: 19px;

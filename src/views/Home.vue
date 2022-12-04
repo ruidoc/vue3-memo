@@ -7,12 +7,13 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import CusHeader from "@/components/CusHeader.vue";
-import { userStore } from "@/stores";
-const store = userStore();
+import { userStore, indexStore } from "@/stores";
+const user_store = userStore();
+const index_store = indexStore();
 onMounted(() => {
-  let user_str = localStorage.getItem("login_user");
-  if (user_str) {
-    store.setUser(JSON.parse(user_str));
-  }
+  user_store.getUser();
+  index_store.getCatalogs();
+  index_store.getMemos();
+  index_store.getActiveId();
 });
 </script>

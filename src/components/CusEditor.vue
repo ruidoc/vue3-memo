@@ -31,8 +31,8 @@ const props = defineProps<{
 }>();
 const emits = defineEmits<{
   (e: "update:modelValue", html: string): void;
+  (e: "change", html: string): void;
 }>();
-const valueHtml = ref("<p>hello</p>");
 const editorRef = shallowRef<IDomEditor>();
 const config = ref<Partial<IToolbarConfig>>({
   toolbarKeys: [
@@ -66,20 +66,22 @@ const config = ref<Partial<IToolbarConfig>>({
 const editConfig = ref<Partial<IEditorConfig>>({
   placeholder: "输入备忘内容...",
   scroll: false, // 禁止编辑器滚动
+  autoFocus: false,
 });
 
 const onCreated = (editor: IDomEditor) => {
   editorRef.value = editor; // 记录 editor 实例，重要！
 };
 const onChange = (editor: IDomEditor) => {
-  emits("update:modelValue", editor.getHtml());
+  // console.log("默认1：", props.modelValue);
+  // console.log("默认2：", editor.getHtml());
+  if (props.modelValue != editor.getHtml()) {
+    emits("update:modelValue", editor.getHtml());
+  }
   // let toolbar = DomEditor.getToolbar(editor);
   // let curToolbarConfig = toolbar?.getConfig();
   // console.log(curToolbarConfig?.toolbarKeys); // 当前菜单排序和分组
 };
-onMounted(() => {
-  valueHtml.value = "<p>模拟 Ajax 异步设置内容</p>";
-});
 </script>
 
 <style lang="less">

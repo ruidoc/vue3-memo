@@ -12,7 +12,7 @@
     <div class="menos-list">
       <div
         v-for="item in store.activeMemos"
-        :key="item.cata_id"
+        :key="item.memo_id"
         :class="
           store.active_memoid == item.memo_id ? 'meno-item active' : 'meno-item'
         "

@@ -26,10 +26,8 @@
 import { indexStore } from "@/stores";
 import { FolderRemove, FolderOpened } from "@element-plus/icons-vue";
 import { ElMessageBox } from "element-plus";
-import { ref } from "vue";
 
 const store = indexStore();
-const text = ref("");
 const toCreate = () => {
   ElMessageBox.prompt("输入文件夹名称", {
     confirmButtonText: "确认",

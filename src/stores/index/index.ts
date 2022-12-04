@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import type { CatalogType, MemoType } from "./types";
-import { geneId, ImitateHttp } from "@/utils";
+import { geneId, localSetItem, localGetItem } from "@/utils";
 
 const indexStore = defineStore("index", {
   state: () => ({
@@ -11,8 +11,11 @@ const indexStore = defineStore("index", {
   }),
   actions: {
     // 获取目录列表
-    getCatalogs(val: CatalogType[]) {
-      this.catalogs = val;
+    getCatalogs() {
+      let data = localGetItem("catalogs");
+      if (data) {
+        this.catalogs = data;
+      }
     },
     // 创建目录
     createCata(val: Pick<CatalogType, "user_id" | "cata_name">) {
@@ -20,12 +23,14 @@ const indexStore = defineStore("index", {
         cata_id: geneId(),
       });
       this.catalogs.push(curcata);
+      localSetItem("catalogs", this.catalogs);
     },
     // 修改目录
     updateCata(id: number, name: string) {
       let index = this.catalogs.findIndex((r) => r.cata_id == id);
       if (index >= 0) {
         this.catalogs[index].cata_name = name;
+        localSetItem("catalogs", this.catalogs);
       }
     },
     // 删除目录
@@ -33,10 +38,12 @@ const indexStore = defineStore("index", {
       let index = this.catalogs.findIndex((r) => r.cata_id == id);
       if (index >= 0) {
         this.catalogs.splice(index, 1);
+        localSetItem("catalogs", this.catalogs);
       }
     },
     setCateId(id: number | null) {
       this.active_cataid = id;
+      localSetItem("active_cataid", id);
       if (this.activeMemos.length == 0) {
         this.setMemoId(null);
       } else {
@@ -44,8 +51,11 @@ const indexStore = defineStore("index", {
       }
     },
     // 获取备忘录列表
-    getMemos(val: MemoType[]) {
-      this.memos = val;
+    getMemos() {
+      let data = localGetItem("memos");
+      if (data) {
+        this.memos = data;
+      }
     },
     // 创建备忘录
     createMemo(val: Pick<MemoType, "title" | "cata_id" | "content">) {
@@ -54,23 +64,31 @@ const indexStore = defineStore("index", {
         update_at: new Date().valueOf(),
       });
       this.memos.push(memo);
+      localSetItem("memos", this.memos);
     },
     // 修改备忘录
-    updateMemo(id: number, data: Partial<MemoType>) {
-      let index = this.memos.findIndex((r) => r.memo_id == id);
+    updateMemo(data: Partial<MemoType>) {
+      let index = this.memos.findIndex((r) => r.memo_id == this.active_memoid);
       if (index >= 0) {
         this.memos[index] = { ...this.memos[index], ...data };
+        localSetItem("memos", this.memos);
       }
     },
     // 删除备忘录
-    removeMemo(id: number) {
-      let index = this.memos.findIndex((r) => r.memo_id == id);
+    removeMemo() {
+      let index = this.memos.findIndex((r) => r.memo_id == this.active_memoid);
       if (index >= 0) {
         this.memos.splice(index, 1);
+        localSetItem("memos", this.memos);
       }
     },
     setMemoId(id: number | null) {
       this.active_memoid = id;
+      localSetItem("active_memoid", id);
+    },
+    getActiveId() {
+      this.active_cataid = localGetItem("active_cataid");
+      this.active_memoid = localGetItem("active_memoid");
     },
   },
   getters: {

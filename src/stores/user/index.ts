@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import type { UserType } from "./types";
-import { ImitateHttp } from "@/utils";
+import { ImitateHttp, localSetItem, localGetItem } from "@/utils";
 
 const userStore = defineStore("user", {
   state: () => ({
@@ -8,12 +8,11 @@ const userStore = defineStore("user", {
   }),
   actions: {
     login(form: UserType) {
-      let regis = localStorage.getItem("regis_user");
+      let user: UserType | null = localGetItem("regis_user");
       return ImitateHttp((s, f) => {
-        if (!regis) {
+        if (!user) {
           f("用户未注册");
         } else {
-          let user: UserType = JSON.parse(regis);
           if (user.phone == form.phone && user.password == form.password) {
             this.setUser(user);
             s("登录成功");
@@ -26,13 +25,19 @@ const userStore = defineStore("user", {
     register(form: UserType) {
       return ImitateHttp((s, f) => {
         form.user_id = parseInt(form.phone.slice(-4));
-        localStorage.setItem("regis_user", JSON.stringify(form));
+        localSetItem("regis_user", form);
         s("ok");
       });
     },
     setUser(user: UserType) {
-      localStorage.setItem("login_user", JSON.stringify(user));
+      localSetItem("login_user", user);
       this.userInfo = user;
+    },
+    getUser() {
+      let data = localGetItem("login_user");
+      if (data) {
+        this.userInfo = data;
+      }
     },
     logout() {
       localStorage.removeItem("login_user");

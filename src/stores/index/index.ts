@@ -67,16 +67,16 @@ const indexStore = defineStore("index", {
       localSetItem("memos", this.memos);
     },
     // 修改备忘录
-    updateMemo(data: Partial<MemoType>) {
-      let index = this.memos.findIndex((r) => r.memo_id == this.active_memoid);
+    updateMemo(id: number, data: Partial<MemoType>) {
+      let index = this.memos.findIndex((r) => r.memo_id == id);
       if (index >= 0) {
         this.memos[index] = { ...this.memos[index], ...data };
         localSetItem("memos", this.memos);
       }
     },
     // 删除备忘录
-    removeMemo() {
-      let index = this.memos.findIndex((r) => r.memo_id == this.active_memoid);
+    removeMemo(id: number) {
+      let index = this.memos.findIndex((r) => r.memo_id == id);
       if (index >= 0) {
         this.memos.splice(index, 1);
         localSetItem("memos", this.memos);

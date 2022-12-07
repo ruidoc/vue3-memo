@@ -3,4 +3,5 @@ export interface UserType {
   user_name: string;
   phone: string;
   password?: string;
+  login_at?: number;
 }

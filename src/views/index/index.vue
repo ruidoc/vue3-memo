@@ -7,13 +7,17 @@
       <menos></menos>
     </div>
     <div class="detail">
-      <template v-if="cur_memo">
-        <cus-editor v-model="content" @update:modelValue="contentChange">
+      <template v-if="cur_memoid">
+        <cus-editor
+          v-model="content"
+          @update:modelValue="contentChange(cur_memoid, content)"
+        >
+          <!-- {{ content }} -->
           <input
             placeholder="输入标题"
             class="memo-title"
             v-model="title"
-            @input="titleChange"
+            @input="titleChange(cur_memoid, title)"
           />
         </cus-editor>
       </template>
@@ -22,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, computed, watch, nextTick, onMounted } from "vue";
 import { indexStore } from "@/stores";
 import CusEditor from "@/components/CusEditor.vue";
 import Cataloge from "./catalogs.vue";
@@ -31,35 +35,44 @@ import { debounce } from "@/utils";
 const store = indexStore();
 const title = ref("");
 const content = ref("");
-const cur_memo = computed(() => {
-  let memo = store.activeMemos.find(
-    (row) => row.memo_id == store.active_memoid
+const cur_memoid = computed(() => store.active_memoid);
+
+const titleChange = debounce((id: number, title: string) => {
+  store.updateMemo(id, {
+    title: title,
+  });
+});
+
+const contentChange = debounce((id: number, ctx: string) => {
+  console.log("触发修改事件：", content.value, ctx);
+  store.updateMemo(id, {
+    content: ctx,
+  });
+});
+
+const updateCtx = () => {
+  let cur_memo = store.activeMemos.find(
+    (row) => row.memo_id == cur_memoid.value
   );
-  return memo || null;
-});
-
-const titleChange = debounce(() => {
-  store.updateMemo({
-    title: title.value,
-  });
-});
-
-const contentChange = debounce((strs: string[]) => {
-  // console.log("触发修改事件：", content.value, strs);
-  store.updateMemo({
-    content: strs[0],
-  });
-});
-
-watch(cur_memo, (val) => {
-  if (val) {
+  if (cur_memo) {
+    // debugger;
+    // 避免数据修改页面不更新
     nextTick(() => {
-      title.value = val.title;
-      content.value = val.content;
+      title.value = cur_memo.title;
+      content.value = cur_memo.content;
     });
+  }
+};
+
+watch(cur_memoid, (val) => {
+  if (val) {
+    updateCtx();
   } else {
     title.value = content.value = "";
   }
+});
+onMounted(() => {
+  updateCtx();
 });
 </script>
 

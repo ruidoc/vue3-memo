@@ -14,6 +14,7 @@ const userStore = defineStore("user", {
           f("用户未注册");
         } else {
           if (user.phone == form.phone && user.password == form.password) {
+            user.login_at = +new Date();
             this.setUser(user);
             s("登录成功");
           } else {

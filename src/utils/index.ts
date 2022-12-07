@@ -33,6 +33,7 @@ export const localSetItem = (key: string, value: any): void => {
 export const debounce = (fn: Function, delay = 1600) => {
   // 定时器
   let timer: number | null = null;
+
   // 将debounce处理结果当作函数返回
   return (...args: any[]) => {
     // 每次事件被触发时，都去清除之前的旧定时器
@@ -41,7 +42,7 @@ export const debounce = (fn: Function, delay = 1600) => {
     }
     // 设立新定时器
     timer = setTimeout(function () {
-      fn(args);
+      fn(...args);
     }, delay);
   };
 };

@@ -62,7 +62,7 @@ const submitForm = async () => {
       message: "手机号和密码不能为空",
     });
   }
-  if (user.phone.length != 11 || Number(user.phone) == NaN) {
+  if (user.phone.length != 11 || isNaN(Number(user.phone))) {
     return ElMessage({
       type: "warning",
       message: "请输入正确的手机号",

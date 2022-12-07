@@ -73,8 +73,6 @@ const onCreated = (editor: IDomEditor) => {
   editorRef.value = editor; // 记录 editor 实例，重要！
 };
 const onChange = (editor: IDomEditor) => {
-  // console.log("默认1：", props.modelValue);
-  // console.log("默认2：", editor.getHtml());
   if (props.modelValue != editor.getHtml()) {
     emits("update:modelValue", editor.getHtml());
   }
@@ -85,7 +83,6 @@ const onChange = (editor: IDomEditor) => {
 </script>
 
 <style lang="less">
-// @import "froala-editor/css/froala_editor.pkgd.min.css";
 @import "@wangeditor/editor/dist/css/style.css";
 .customcomp-editor {
   height: 100%;

@@ -27,7 +27,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   let user = localGetItem("login_user");
-  let is_valid = dayjs().isBefore(dayjs(user.login_at).add(3, "day"));
+  let is_valid = dayjs().isBefore(dayjs(user?.login_at).add(3, "day"));
   if (to.fullPath != "/login") {
     if (!user || !is_valid) {
       return next("/login");

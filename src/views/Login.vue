@@ -16,6 +16,14 @@
           v-model="form.password"
         />
       </el-form-item>
+      <el-form-item v-if="!is_login">
+        <el-input
+          placeholder="确认密码"
+          size="large"
+          show-password
+          v-model="form.conform_password"
+        />
+      </el-form-item>
       <el-form-item>
         <el-button
           class="login-btn"
@@ -48,6 +56,7 @@ const form = ref({
   phone: "",
   user_name: "",
   password: "",
+  conform_password: "",
 });
 const is_login = ref(true);
 const loading = ref(false);
@@ -73,6 +82,14 @@ const submitForm = async () => {
       type: "warning",
       message: "请输入用户名",
     });
+  }
+  if (!is_login.value) {
+    if (user.password != user.conform_password) {
+      return ElMessage({
+        type: "warning",
+        message: "两次输入密码不一致",
+      });
+    }
   }
   try {
     loading.value = true;
